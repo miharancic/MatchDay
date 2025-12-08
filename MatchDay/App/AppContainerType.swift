@@ -8,5 +8,5 @@
 import MDDomain
 
 protocol AppContainerType: Sendable {
-
+    var matchRepository: any MatchRepositoryType { get }
 }
