@@ -5,16 +5,14 @@
 //  Created by Mihailo Rancic on 8. 12. 2025..
 //
 
-public protocol MatchRepositoryType: Sendable {
-    func loadStored() async throws
-    
+public protocol MatchRepositoryType: Sendable {    
     func fetchAndStoreSports() async throws
     func fetchAndStoreCompetitions() async throws
     func fetchAndStoreMatches() async throws
     
-    func getAllSports() async -> [SportEntity]
-    func getAllCompetitions() async -> [CompetitionEntity]
-    func getAllMatches() async -> [MatchEntity]
+    func getAllSports() async throws -> [SportEntity]
+    func getMatches(with sportId: Int) async throws -> [MatchEntity]
+    func getLiveMatches(with sportId: Int) async throws -> [MatchEntity]
     
     func linkRelationships() async throws
 }

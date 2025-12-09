@@ -11,23 +11,13 @@ public actor MatchRepository: MatchRepositoryType {
     private let networkService: any NetworkServiceType
     private let matchStore: any MatchStoreType
     
-    private var sports: [SportEntity] = []
-    private var competitions: [CompetitionEntity] = []
-    private var matches: [MatchEntity] = []
-    
     public init(networkService: any NetworkServiceType, matchStore: any MatchStoreType) {
         self.networkService = networkService
         self.matchStore = matchStore
     }
     
-    public func loadStored() async throws {
-        sports = try await matchStore.loadSports()
-        competitions = try await matchStore.loadCompetitions()
-        matches = try await matchStore.loadMatches()
-    }
-    
-    public func getAllSports() -> [SportEntity] {
-        return sports
+    public func getAllSports() async throws -> [SportEntity] {
+        try await matchStore.loadSports()
     }
     
     public func fetchAndStoreSports() async throws {
@@ -35,11 +25,6 @@ public actor MatchRepository: MatchRepositoryType {
         guard response.isEmpty == false else { return }
         let entities = response.map({ SportEntity(id: $0.id, name: $0.name, sportIconUrl: $0.sportIconUrl) })
         try await matchStore.storeSports(entities)
-        sports = try await matchStore.loadSports()
-    }
-    
-    public func getAllCompetitions() -> [CompetitionEntity] {
-        return competitions
     }
     
     public func fetchAndStoreCompetitions() async throws {
@@ -47,11 +32,14 @@ public actor MatchRepository: MatchRepositoryType {
         guard response.isEmpty == false else { return }
         let entities = response.map({ CompetitionEntity(id: $0.id, sportId: $0.sportId, sport: nil, name: $0.name, sportIconUrl: $0.competitionIconUrl) })
         try await matchStore.storeCompetitions(entities)
-        competitions = try await matchStore.loadCompetitions()
     }
     
-    public func getAllMatches() -> [MatchEntity] {
-        return matches
+    public func getMatches(with sportId: Int) async throws -> [MatchEntity] {
+        try await matchStore.loadMatches(with: sportId)
+    }
+    
+    public func getLiveMatches(with sportId: Int) async throws -> [MatchEntity] {
+        try await matchStore.loadLiveMatches(with: sportId)
     }
     
     public func fetchAndStoreMatches() async throws {
@@ -59,7 +47,6 @@ public actor MatchRepository: MatchRepositoryType {
         guard response.isEmpty == false else { return }
         let entities = response.map({ MatchEntity(id: $0.id, homeTeam: $0.homeTeam, awayTeam: $0.awayTeam, homeTeamAvatar: $0.awayTeamAvatar, awayTeamAvatar: $0.awayTeamAvatar, date: $0.date, status: $0.status, currentTime: $0.currentTime, result: $0.result.map { ResultEntity(home: $0.home, away: $0.away) }, sportId: $0.sportId, sport: nil, competitionId: $0.competitionId, competition: nil) })
         try await matchStore.storeMatches(entities)
-        matches = try await matchStore.loadMatches()
     }
     
     public func linkRelationships() async throws {

@@ -33,13 +33,6 @@ public actor MatchStore: MatchStoreType {
         try modelContext.save()
     }
     
-    public func loadCompetitions() async throws -> [CompetitionEntity] {
-        let descriptor = FetchDescriptor<CompetitionEntity>(
-            sortBy: [SortDescriptor(\CompetitionEntity.id, order: .forward)]
-        )
-        return try modelContext.fetch(descriptor)
-    }
-    
     public func storeCompetitions(_ competitions: [CompetitionEntity]) async throws {
         for competition in competitions {
             modelContext.insert(competition)
@@ -48,8 +41,43 @@ public actor MatchStore: MatchStoreType {
     }
     
     public func loadMatches() async throws -> [MatchEntity] {
+        let predicate = #Predicate<MatchEntity> { match in
+            match.status?.contains("LIVE") == false
+        }
         let descriptor = FetchDescriptor<MatchEntity>(
-            sortBy: [SortDescriptor(\MatchEntity.id, order: .forward)]
+            predicate: predicate, sortBy: [SortDescriptor(\MatchEntity.id, order: .forward)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+    
+    public func loadLiveMatches() async throws -> [MatchEntity] {
+        let predicate = #Predicate<MatchEntity> { match in
+            match.status?.contains("LIVE") == true
+        }
+        let descriptor = FetchDescriptor<MatchEntity>(
+            predicate: predicate, sortBy: [SortDescriptor(\MatchEntity.id, order: .forward)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+    
+    public func loadMatches(with sportId: Int) async throws -> [MatchEntity] {
+        let predicate = #Predicate<MatchEntity> { match in
+            match.sportId == sportId && match.status?.contains("LIVE") == false
+        }
+        
+        let descriptor = FetchDescriptor<MatchEntity>(
+            predicate: predicate, sortBy: [SortDescriptor(\MatchEntity.id, order: .forward)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+    
+    public func loadLiveMatches(with sportId: Int) async throws -> [MatchEntity] {
+        let predicate = #Predicate<MatchEntity> { match in
+            match.sportId == sportId && match.status?.contains("LIVE") == true
+        }
+        
+        let descriptor = FetchDescriptor<MatchEntity>(
+            predicate: predicate, sortBy: [SortDescriptor(\MatchEntity.id, order: .forward)]
         )
         return try modelContext.fetch(descriptor)
     }

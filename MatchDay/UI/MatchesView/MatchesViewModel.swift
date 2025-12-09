@@ -13,8 +13,10 @@ import MDDomain
 final class MatchesViewModel: MatchesViewModelType {
     
     var sports: [SportEntity] = []
-    var competitions: [CompetitionEntity] = []
     var matches: [MatchEntity] = []
+    var liveMatches: [MatchEntity] = []
+    
+    var selectedSportId = 1
     
     private var loadTask: Task<Void, Never>?
 
@@ -26,12 +28,11 @@ final class MatchesViewModel: MatchesViewModelType {
     
     public func loadStored() async {
         do {
-            try await matchRepository.loadStored()
-            sports = await matchRepository.getAllSports()
-            competitions = await matchRepository.getAllCompetitions()
-            matches = await matchRepository.getAllMatches()
+            sports = try await matchRepository.getAllSports()
+            matches = try await matchRepository.getMatches(with: selectedSportId)
+            liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
-            print("Error laoding stored matches: \(error)")
+            print("Error loading stored matches: \(error)")
         }
     }
     
@@ -66,7 +67,7 @@ final class MatchesViewModel: MatchesViewModelType {
     private func fetchAllSports() async {
         do {
             try await matchRepository.fetchAndStoreSports()
-            sports = await matchRepository.getAllSports()
+            sports = try await matchRepository.getAllSports()
         } catch {
             print("Error fetching sports: \(error)")
         }
@@ -75,7 +76,6 @@ final class MatchesViewModel: MatchesViewModelType {
     private func fetchAllCompetitions() async {
         do {
             try await matchRepository.fetchAndStoreCompetitions()
-            competitions = await matchRepository.getAllCompetitions()
         } catch {
             print("Error fetching competitions: \(error)")
         }
@@ -84,7 +84,8 @@ final class MatchesViewModel: MatchesViewModelType {
     private func fetchAllMatches() async {
         do {
             try await matchRepository.fetchAndStoreMatches()
-            matches = await matchRepository.getAllMatches()
+            matches = try await matchRepository.getMatches(with: selectedSportId)
+            liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
             print("Error fetching matches: \(error)")
         }

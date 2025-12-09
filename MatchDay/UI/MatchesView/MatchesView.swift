@@ -18,10 +18,21 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
                 HStack {
                     ForEach(viewModel.sports) { sport in
                         Text(sport.name)
+                            .onTapGesture {
+                                viewModel.selectedSportId = sport.id
+                            }
                     }
                 }
             }
             .frame(minHeight: 50)
+            
+            Spacer(minLength: 50)
+            
+            ForEach(viewModel.liveMatches) { match in
+                HStack {
+                    Text(match.homeTeam) + Text(" vs ") + Text(match.awayTeam)
+                }
+            }
             
             Spacer(minLength: 50)
             
@@ -31,8 +42,10 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
                 }
             }
         }
-        .task {
+        .task(id: viewModel.selectedSportId) {
             await viewModel.loadStored()
+        }
+        .task {
             await viewModel.loadAllInParallel()
         }
         .refreshable {

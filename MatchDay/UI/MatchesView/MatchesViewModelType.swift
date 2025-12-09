@@ -10,8 +10,10 @@ import MDDomain
 
 @MainActor protocol MatchesViewModelType {
     var sports: [SportEntity] { get }
-    var competitions: [CompetitionEntity] { get }
     var matches: [MatchEntity] { get }
+    var liveMatches: [MatchEntity] { get }
+    
+    var selectedSportId: Int { get set }
     
     func loadStored() async
     func loadAllInParallel() async
