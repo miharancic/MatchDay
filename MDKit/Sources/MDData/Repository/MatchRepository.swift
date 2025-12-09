@@ -34,8 +34,8 @@ public actor MatchRepository: MatchRepositoryType {
         try await matchStore.storeCompetitions(entities)
     }
     
-    public func getMatches(with sportId: Int) async throws -> [MatchEntity] {
-        try await matchStore.loadMatches(with: sportId)
+    public func getMatches(with sportId: Int, dateRange: DateRange) async throws -> [MatchEntity] {
+        try await matchStore.loadMatches(with: sportId, dateRange: dateRange)
     }
     
     public func getLiveMatches(with sportId: Int) async throws -> [MatchEntity] {

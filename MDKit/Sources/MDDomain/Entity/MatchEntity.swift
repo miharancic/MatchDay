@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import MDUtils
 
 @Model
 public final class MatchEntity: @unchecked Sendable {
@@ -16,7 +17,7 @@ public final class MatchEntity: @unchecked Sendable {
     public var awayTeam: String
     public var homeTeamAvatar: String
     public var awayTeamAvatar: String
-    public var date: String
+    public var date: Date
     public var status: String?
     public var currentTime: String?
     public var result: ResultEntity?
@@ -31,7 +32,15 @@ public final class MatchEntity: @unchecked Sendable {
         self.awayTeam = awayTeam
         self.homeTeamAvatar = homeTeamAvatar
         self.awayTeamAvatar = awayTeamAvatar
-        self.date = date
+        
+        if let dateFromString = Date.fromDateTimeString(date) {
+            self.date = dateFromString
+        } else if let dateFromMillis = Date.fromMilliseconds(date) {
+            self.date = dateFromMillis
+        } else {
+            self.date = Date.distantFuture
+        }
+
         self.status = status
         self.currentTime = currentTime
         self.result = result

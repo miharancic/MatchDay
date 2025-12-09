@@ -14,6 +14,7 @@ import MDDomain
     var liveMatches: [MatchEntity] { get }
     
     var selectedSportId: Int { get set }
+    var selectedDateRange: DateRange { get set }
     
     func loadStored() async
     func loadAllInParallel() async

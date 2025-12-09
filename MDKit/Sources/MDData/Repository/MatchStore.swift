@@ -8,6 +8,7 @@
 import MDDomain
 import SwiftData
 import Foundation
+import MDUtils
 
 public actor MatchStore: MatchStoreType {
     private let modelContext: ModelContext
@@ -60,9 +61,10 @@ public actor MatchStore: MatchStoreType {
         return try modelContext.fetch(descriptor)
     }
     
-    public func loadMatches(with sportId: Int) async throws -> [MatchEntity] {
+    public func loadMatches(with sportId: Int, dateRange: DateRange) async throws -> [MatchEntity] {
+        let (start, end) = dateRange.range
         let predicate = #Predicate<MatchEntity> { match in
-            match.sportId == sportId && match.status?.contains("LIVE") == false
+            match.sportId == sportId && match.status?.contains("LIVE") == false && match.date >= start && match.date < end
         }
         
         let descriptor = FetchDescriptor<MatchEntity>(

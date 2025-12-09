@@ -18,32 +18,83 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
                 HStack {
                     ForEach(viewModel.sports) { sport in
                         Text(sport.name)
+                            .bold(sport.id == viewModel.selectedSportId)
                             .onTapGesture {
                                 viewModel.selectedSportId = sport.id
                             }
                     }
                 }
             }
-            .frame(minHeight: 50)
-            
-            Spacer(minLength: 50)
-            
-            ForEach(viewModel.liveMatches) { match in
-                HStack {
-                    Text(match.homeTeam) + Text(" vs ") + Text(match.awayTeam)
-                }
+            .frame(minHeight: 30)
+            .task(id: viewModel.selectedSportId) {
+                await viewModel.loadStored()
             }
             
-            Spacer(minLength: 50)
+            let liveColumns = viewModel.liveMatches.chunked(into: 2)
+            GeometryReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(liveColumns.indices, id: \.self) { index in
+                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
+                                ForEach(liveColumns[index], id: \.self) { match in
+                                    VStack(spacing: 0) {
+                                        Text(match.homeTeam)
+                                        Text(" vs ")
+                                        Text(match.awayTeam)
+                                    }
+                                    .border(.red, width: 4)
+                                }
+                            }
+                            .frame(width: proxy.size.width - 32)
+                            .padding()
+                        }
+                    }
+                }
+                .scrollTargetBehavior(.paging)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+            .frame(minHeight: 200)
             
-            ForEach(viewModel.matches) { match in
+            ScrollView(.horizontal) {
                 HStack {
-                    Text(match.homeTeam) + Text(" vs ") + Text(match.awayTeam)
+                    ForEach(DateRange.allCases, id: \.self) { range in
+                        Text(range.rawValue)
+                            .bold(range == viewModel.selectedDateRange)
+                            .onTapGesture {
+                                viewModel.selectedDateRange = range
+                            }
+                    }
                 }
             }
-        }
-        .task(id: viewModel.selectedSportId) {
-            await viewModel.loadStored()
+            .frame(minHeight: 30)
+            .task(id: viewModel.selectedDateRange) {
+                await viewModel.loadStored()
+            }
+            
+            let columns = viewModel.matches.chunked(into: 2)
+            GeometryReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(columns.indices, id: \.self) { index in
+                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
+                                ForEach(columns[index], id: \.self) { match in
+                                    VStack(spacing: 0) {
+                                        Text(match.homeTeam)
+                                        Text(" vs ")
+                                        Text(match.awayTeam)
+                                    }
+                                    .border(.red, width: 4)
+                                }
+                            }
+                            .frame(width: proxy.size.width - 32)
+                            .padding()
+                        }
+                    }
+                }
+                .scrollTargetBehavior(.paging)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+            .frame(minHeight: 200)
         }
         .task {
             await viewModel.loadAllInParallel()

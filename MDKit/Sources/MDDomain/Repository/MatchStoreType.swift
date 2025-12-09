@@ -13,7 +13,7 @@ public protocol MatchStoreType: Sendable {
     
     func loadMatches() async throws -> [MatchEntity]
     func loadLiveMatches() async throws -> [MatchEntity]
-    func loadMatches(with sportId: Int) async throws -> [MatchEntity]
+    func loadMatches(with sportId: Int, dateRange: DateRange) async throws -> [MatchEntity]
     func loadLiveMatches(with sportId: Int) async throws -> [MatchEntity]
     func storeMatches(_ matches: [MatchEntity]) async throws
     

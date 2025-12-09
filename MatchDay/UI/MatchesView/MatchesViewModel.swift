@@ -17,6 +17,7 @@ final class MatchesViewModel: MatchesViewModelType {
     var liveMatches: [MatchEntity] = []
     
     var selectedSportId = 1
+    var selectedDateRange: DateRange = .today
     
     private var loadTask: Task<Void, Never>?
 
@@ -29,7 +30,7 @@ final class MatchesViewModel: MatchesViewModelType {
     public func loadStored() async {
         do {
             sports = try await matchRepository.getAllSports()
-            matches = try await matchRepository.getMatches(with: selectedSportId)
+            matches = try await matchRepository.getMatches(with: selectedSportId, dateRange: selectedDateRange)
             liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
             print("Error loading stored matches: \(error)")
@@ -84,7 +85,7 @@ final class MatchesViewModel: MatchesViewModelType {
     private func fetchAllMatches() async {
         do {
             try await matchRepository.fetchAndStoreMatches()
-            matches = try await matchRepository.getMatches(with: selectedSportId)
+            matches = try await matchRepository.getMatches(with: selectedSportId, dateRange: selectedDateRange)
             liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
             print("Error fetching matches: \(error)")

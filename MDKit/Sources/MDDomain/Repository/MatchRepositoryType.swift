@@ -11,7 +11,7 @@ public protocol MatchRepositoryType: Sendable {
     func fetchAndStoreMatches() async throws
     
     func getAllSports() async throws -> [SportEntity]
-    func getMatches(with sportId: Int) async throws -> [MatchEntity]
+    func getMatches(with sportId: Int, dateRange: DateRange) async throws -> [MatchEntity]
     func getLiveMatches(with sportId: Int) async throws -> [MatchEntity]
     
     func linkRelationships() async throws
