@@ -16,10 +16,18 @@ let package = Package(
             targets: ["MDData"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/SDWebImage/SDWebImageSVGCoder.git", from: "1.8.0"),
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", from: "3.1.4")
+    ],
     targets: [
         .target(
             name: "MDDomain",
-            dependencies: ["MDUtils"]
+            dependencies: [
+                .byName(name: "MDUtils"),
+                .byName(name: "SDWebImageSVGCoder"),
+                .byName(name: "SDWebImageSwiftUI")
+            ]
         ),
         .target(
             name: "MDData",

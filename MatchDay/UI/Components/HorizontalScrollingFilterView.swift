@@ -17,7 +17,7 @@ struct HorizontalScrollingFilterView<Item: Hashable, Content: View>: View {
     }
 
     var body: some View {
-        ScrollView(.horizontal) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(items, id: \.self) { item in
                     content(item)

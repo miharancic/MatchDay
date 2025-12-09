@@ -29,7 +29,7 @@ struct MatchesGridView<Content: View>: View {
                             ForEach(columns[index], id: \.self) { match in
                                 content(match)
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .border(.red, width: 4)
+                                    .border(.red, width: 1)
                             }
                         }
                         .frame(width: proxy.size.width - 2 * spacing)

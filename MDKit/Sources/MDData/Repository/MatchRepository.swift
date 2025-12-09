@@ -45,7 +45,7 @@ public actor MatchRepository: MatchRepositoryType {
     public func fetchAndStoreMatches() async throws {
         let response = try await networkService.send(MatchAPI.getAllMatches, responseType: [MatchDTO].self)
         guard response.isEmpty == false else { return }
-        let entities = response.map({ MatchEntity(id: $0.id, homeTeam: $0.homeTeam, awayTeam: $0.awayTeam, homeTeamAvatar: $0.awayTeamAvatar, awayTeamAvatar: $0.awayTeamAvatar, date: $0.date, status: $0.status, currentTime: $0.currentTime, result: $0.result.map { ResultEntity(home: $0.home, away: $0.away) }, sportId: $0.sportId, sport: nil, competitionId: $0.competitionId, competition: nil) })
+        let entities = response.map({ MatchEntity(id: $0.id, homeTeam: $0.homeTeam, awayTeam: $0.awayTeam, homeTeamAvatar: $0.homeTeamAvatar, awayTeamAvatar: $0.awayTeamAvatar, date: $0.date, status: $0.status, currentTime: $0.currentTime, result: $0.result.map { ResultEntity(home: $0.home, away: $0.away) }, sportId: $0.sportId, sport: nil, competitionId: $0.competitionId, competition: nil) })
         try await matchStore.storeMatches(entities)
     }
     

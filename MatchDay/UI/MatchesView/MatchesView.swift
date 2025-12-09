@@ -15,11 +15,16 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
     var body: some View {
         ScrollView {
             HorizontalScrollingFilterView(items: viewModel.sports) { sport in
-                Text(sport.name)
-                    .bold(sport.id == viewModel.selectedSportId)
-                    .onTapGesture {
-                        viewModel.selectedSportId = sport.id
-                    }
+                HStack(spacing: 4) {
+                    RemoteSVGView(urlString: sport.sportIconUrl)
+                        .frame(width: 20, height: 20)
+                    
+                    Text(sport.name)
+                        .bold(sport.id == viewModel.selectedSportId)
+                        .onTapGesture {
+                            viewModel.selectedSportId = sport.id
+                        }
+                }
             }
             .frame(minHeight: 30)
             .task(id: viewModel.selectedSportId) {
@@ -27,10 +32,18 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
             }
             
             MatchesGridView(matches: viewModel.liveMatches) { match in
-                VStack(spacing: 0) {
-                    Text(match.homeTeam)
-                    Text(" vs ")
-                    Text(match.awayTeam)
+                HStack {
+                    RemoteSVGView(urlString: match.homeTeamAvatar)
+                        .frame(width: 40, height: 40)
+                    VStack(spacing: 0) {
+                        Text(match.homeTeam)
+                            .frame(maxWidth: .infinity)
+                        Text(" vs ")
+                        Text(match.awayTeam)
+                            .frame(maxWidth: .infinity)
+                    }
+                    RemoteSVGView(urlString: match.awayTeamAvatar)
+                        .frame(width: 40, height: 40)
                 }
             }
             
@@ -47,10 +60,23 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
             }
             
             MatchesGridView(matches: viewModel.matches) { match in
-                VStack(spacing: 0) {
-                    Text(match.homeTeam)
-                    Text(" vs ")
-                    Text(match.awayTeam)
+                HStack {
+                    RemoteSVGView(urlString: match.homeTeamAvatar)
+                        .frame(width: 40, height: 40)
+                    VStack(spacing: 0) {
+                        Text(match.homeTeam)
+                            .frame(maxWidth: .infinity)
+                        RemoteSVGView(urlString: match.competition?.sportIconUrl)
+                            .frame(width: 20, height: 20)
+                            .redacted(reason: match.competition != nil ? [] : .placeholder)
+                        Text(match.competition?.name ?? "")
+                            .font(.caption)
+                            .redacted(reason: match.competition != nil ? [] : .placeholder)
+                        Text(match.awayTeam)
+                            .frame(maxWidth: .infinity)
+                    }
+                    RemoteSVGView(urlString: match.homeTeamAvatar)
+                        .frame(width: 40, height: 40)
                 }
             }
         }

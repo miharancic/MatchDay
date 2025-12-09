@@ -6,10 +6,16 @@
 //
 
 import SwiftUI
+import SDWebImageSVGCoder
 
 @main
 struct MatchDayApp: App {
     private let container = AppContainerKey.defaultValue
+    
+    init() {
+        let SVGCoder = SDImageSVGCoder.shared
+        SDImageCodersManager.shared.addCoder(SVGCoder)
+    }
     
     var body: some Scene {
         WindowGroup {
