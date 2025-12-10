@@ -33,62 +33,66 @@ final class MatchesViewModel: MatchesViewModelType {
             matches = try await matchRepository.getMatches(with: selectedSportId, dateRange: selectedDateRange)
             liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
-            print("Error loading stored matches: \(error)")
+            print("Error loading stored: \(error)")
         }
     }
     
-    public func loadAllInParallel() async {
+    public func refreshAllInParallel() async {
         await withTaskGroup(of: Void.self) { [weak self] group in
             guard let self = self else { return }
             
             group.addTask {
-                await self.fetchAllSports()
+                await self.refreshAllSports()
             }
             group.addTask {
-                await self.fetchAllCompetitions()
+                await self.refreshAllCompetitions()
             }
             group.addTask {
-                await self.fetchAllMatches()
+                await self.refreshAllMatches()
             }
             
             await group.waitForAll()
         }
         
-        try? await matchRepository.linkRelationships()
-        await loadStored()
+        do {
+            try await matchRepository.linkRelationships()
+            await loadStored()
+        } catch {
+            print("Error linking relationship: \(error)")
+        }
     }
 
     public func refresh() {
         loadTask?.cancel()
         loadTask = Task {
-            await loadAllInParallel()
+            await refreshAllInParallel()
         }
     }
     
-    private func fetchAllSports() async {
+    private func refreshAllSports() async {
         do {
             try await matchRepository.fetchAndStoreSports()
             sports = try await matchRepository.getAllSports()
         } catch {
-            print("Error fetching sports: \(error)")
+            print("Error refreshing sports: \(error)")
         }
     }
     
-    private func fetchAllCompetitions() async {
+    private func refreshAllCompetitions() async {
         do {
             try await matchRepository.fetchAndStoreCompetitions()
         } catch {
-            print("Error fetching competitions: \(error)")
+            print("Error refreshing competitions: \(error)")
         }
     }
     
-    private func fetchAllMatches() async {
+    private func refreshAllMatches() async {
         do {
             try await matchRepository.fetchAndStoreMatches()
             matches = try await matchRepository.getMatches(with: selectedSportId, dateRange: selectedDateRange)
             liveMatches = try await matchRepository.getLiveMatches(with: selectedSportId)
         } catch {
-            print("Error fetching matches: \(error)")
+            print("Error refreshing matches: \(error)")
         }
     }
 }

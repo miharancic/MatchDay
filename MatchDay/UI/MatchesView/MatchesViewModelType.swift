@@ -17,6 +17,6 @@ import MDDomain
     var selectedDateRange: DateRange { get set }
     
     func loadStored() async
-    func loadAllInParallel() async
+    func refreshAllInParallel() async
     func refresh()
 }

@@ -38,7 +38,7 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
         }
         .padding(.vertical)
         .task {
-            await viewModel.loadAllInParallel()
+            await viewModel.refreshAllInParallel()
         }
         .refreshable {
             viewModel.refresh()
