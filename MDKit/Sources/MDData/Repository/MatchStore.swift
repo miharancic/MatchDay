@@ -14,9 +14,18 @@ public actor MatchStore: MatchStoreType {
     private let modelContext: ModelContext
     
     public init() {
-        let storeURL = URL.documentsDirectory.appendingPathComponent("MatchStore.sqlite")
-        let config = ModelConfiguration(url: storeURL)
-        let container = try! ModelContainer(for: SportEntity.self, CompetitionEntity.self, MatchEntity.self, ResultEntity.self, configurations: config)
+        let container: ModelContainer
+        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        
+        if isPreview {
+            let config = ModelConfiguration(isStoredInMemoryOnly: true)
+            container = try! ModelContainer(for: SportEntity.self, CompetitionEntity.self, MatchEntity.self, ResultEntity.self, configurations: config)
+        } else {
+            let storeURL = URL.documentsDirectory.appendingPathComponent("MatchStore.sqlite")
+            let config = ModelConfiguration(url: storeURL)
+            container = try! ModelContainer(for: SportEntity.self, CompetitionEntity.self, MatchEntity.self, ResultEntity.self, configurations: config)
+        }
+        
         self.modelContext = DefaultSerialModelExecutor(modelContext: ModelContext(container)).modelContext
     }
     
@@ -28,6 +37,7 @@ public actor MatchStore: MatchStoreType {
     }
     
     public func storeSports(_ sports: [SportEntity]) async throws {
+        guard sports.isEmpty == false else { return }
         for sport in sports {
             modelContext.insert(sport)
         }
@@ -35,6 +45,7 @@ public actor MatchStore: MatchStoreType {
     }
     
     public func storeCompetitions(_ competitions: [CompetitionEntity]) async throws {
+        guard competitions.isEmpty == false else { return }
         for competition in competitions {
             modelContext.insert(competition)
         }
@@ -85,6 +96,7 @@ public actor MatchStore: MatchStoreType {
     }
     
     public func storeMatches(_ matches: [MatchEntity]) async throws {
+        guard matches.isEmpty == false else { return }
         let existing = try modelContext.fetch(FetchDescriptor<MatchEntity>())
         let incomingIDs = Set(matches.map { $0.id })
         
