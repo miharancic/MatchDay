@@ -39,6 +39,6 @@ struct MatchesGridView<Content: View>: View {
             .scrollTargetBehavior(.paging)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
-        .frame(minHeight: 350)
+        .frame(minHeight: 320)
     }
 }

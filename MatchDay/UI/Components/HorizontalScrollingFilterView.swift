@@ -25,5 +25,6 @@ struct HorizontalScrollingFilterView<Item: Hashable, Content: View>: View {
             }
             .padding(.horizontal)
         }
+        .frame(minHeight: 30)
     }
 }

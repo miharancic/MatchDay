@@ -15,18 +15,8 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
     var body: some View {
         ScrollView {
             HorizontalScrollingFilterView(items: viewModel.sports) { sport in
-                HStack(spacing: 4) {
-                    RemoteSVGView(urlString: sport.sportIconUrl)
-                        .frame(width: 20, height: 20)
-                    
-                    Text(sport.name)
-                        .bold(sport.id == viewModel.selectedSportId)
-                        .onTapGesture {
-                            viewModel.selectedSportId = sport.id
-                        }
-                }
+                SportView(sport: sport)
             }
-            .frame(minHeight: 30)
             .task(id: viewModel.selectedSportId) {
                 await viewModel.loadStored()
             }
@@ -36,36 +26,14 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
             }
             
             HorizontalScrollingFilterView(items: DateRange.allCases) { range in
-                Text(range.rawValue)
-                    .bold(range == viewModel.selectedDateRange)
-                    .onTapGesture {
-                        viewModel.selectedDateRange = range
-                    }
+                DateRangeView(range: range)
             }
-            .frame(minHeight: 30)
             .task(id: viewModel.selectedDateRange) {
                 await viewModel.loadStored()
             }
             
             MatchesGridView(matches: viewModel.matches) { match in
-                HStack {
-                    RemoteSVGView(urlString: match.homeTeamAvatar)
-                        .frame(width: 40, height: 40)
-                    VStack(spacing: 0) {
-                        Text(match.homeTeam)
-                            .frame(maxWidth: .infinity)
-                        RemoteSVGView(urlString: match.competition?.sportIconUrl)
-                            .frame(width: 20, height: 20)
-                            .redacted(reason: match.competition != nil ? [] : .placeholder)
-                        Text(match.competition?.name ?? "")
-                            .font(.caption)
-                            .redacted(reason: match.competition != nil ? [] : .placeholder)
-                        Text(match.awayTeam)
-                            .frame(maxWidth: .infinity)
-                    }
-                    RemoteSVGView(urlString: match.homeTeamAvatar)
-                        .frame(width: 40, height: 40)
-                }
+                PrematchView(match: match)
             }
         }
         .padding(.vertical)
@@ -75,6 +43,29 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
         .refreshable {
             viewModel.refresh()
         }
+        .edgesIgnoringSafeArea(.bottom)
+    }
+    
+    private func SportView(sport: SportEntity) -> some View {
+        HStack(spacing: 4) {
+            RemoteSVGView(urlString: sport.sportIconUrl)
+                .frame(width: 20, height: 20)
+            
+            Text(sport.name)
+                .bold(sport.id == viewModel.selectedSportId)
+                
+        }
+        .onTapGesture {
+            viewModel.selectedSportId = sport.id
+        }
+    }
+    
+    private func DateRangeView(range: DateRange) -> some View {
+        Text(range.rawValue)
+            .bold(range == viewModel.selectedDateRange)
+            .onTapGesture {
+                viewModel.selectedDateRange = range
+            }
     }
 }
 
