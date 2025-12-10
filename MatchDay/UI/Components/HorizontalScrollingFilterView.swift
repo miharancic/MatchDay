@@ -23,6 +23,7 @@ struct HorizontalScrollingFilterView<Item: Hashable, Content: View>: View {
                     content(item)
                 }
             }
+            .padding(.horizontal)
         }
     }
 }

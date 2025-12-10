@@ -32,19 +32,7 @@ struct MatchesView<ViewModel: MatchesViewModelType>: View {
             }
             
             MatchesGridView(matches: viewModel.liveMatches) { match in
-                HStack {
-                    RemoteSVGView(urlString: match.homeTeamAvatar)
-                        .frame(width: 40, height: 40)
-                    VStack(spacing: 0) {
-                        Text(match.homeTeam)
-                            .frame(maxWidth: .infinity)
-                        Text(" vs ")
-                        Text(match.awayTeam)
-                            .frame(maxWidth: .infinity)
-                    }
-                    RemoteSVGView(urlString: match.awayTeamAvatar)
-                        .frame(width: 40, height: 40)
-                }
+                LiveMatchView(match: match)
             }
             
             HorizontalScrollingFilterView(items: DateRange.allCases) { range in
